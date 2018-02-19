@@ -12,13 +12,31 @@ import binascii
 
 logging.basicConfig(level=logging.INFO)
 
+
+#per-instance config
+def get_config(endpoint, team_name, typee):
+    r = requests.get('{}?team={}&type={}'.format(endpoint, team_name, typee), headers={'api-key':'HakunaMatata69'}).json()
+    if r['status']:
+        return r
+    else:
+        raise Exception("failed to get per-instance config from {}".format(endpoint))
+
+
+TEAM_NAME = os.environ['TEAM_NAME']
+ASAF_APIENDPOINT = 'http://ec2-52-56-172-104.eu-west-2.compute.amazonaws.com:3000/ctf/server_config'
+print(TEAM_NAME)
+CONFIG = get_config(ASAF_APIENDPOINT, TEAM_NAME, 'attacker')
+print(CONFIG)
+ADMIN_IDS = CONFIG['data']['adminIds']
+BAKER_IDS = CONFIG['data']['bakerIds']
+CLIENT_TOKEN = CONFIG['data']['discordToken']
+
+#general config
 INFO_CHANNEL = 'info'
 BEETS_CHANNEL = 'beetcoin'
 SUPPORT_CHANNEL = 'support'
 DB_PATH = r'./jsondb_isa_badidea'
-CHANNEL_IDS = {INFO_CHANNEL:'412977452600524811', SUPPORT_CHANNEL:'412977506354855936', BEETS_CHANNEL:'412977527414456321'}
-ADMIN_IDS = [412902762171596800,173497654561603584]
-BAKER_IDS = [412910868397948930,412913495902912525,413276274929303562]
+CHANNEL_IDS = {}
 BEETS_DIR = './beets'
 BEETS = os.listdir(BEETS_DIR)
 
@@ -45,6 +63,25 @@ CAT_HINTS = ['If you turn discord developer view on you could easily view user/m
              'There are two ways to go about solving this stage, however, your end goal is the same(and it is also the main goal of every individual on our planet pretty much): run code on Obama',
              'There are 4 useless hints hidden amongst all the cat facts']
 
+#utils
+def get_cids(channels):
+    uids = ['']*len(channels)
+    for server in client.servers:
+        for channel in server.channels:
+            if channel.name in channels:
+                uids[channels.index(channel.name)] = channel.id    
+
+    return tuple(uids)
+
+def get_uids(members):
+    uids = ['']*len(members)
+    for server in client.servers:
+        for member in server.members:
+            if member.name in members:
+                uids[members.index(member.name)] = member.id    
+
+    return tuple(uids)
+
 def make_key(token):
     token = binascii.unhexlify(token)
     kDot = b'AllHailKingKendrick!'
@@ -59,18 +96,23 @@ def make_key(token):
     #replicate encryptor operations
     return newKey
 
+#codehz
 allowed_oscmd = []
 client = discord.Client()
 
 @client.event
 async def on_ready():
+    global CHANNEL_IDS
+    info, beet, support = get_cids(['info', 'beetcoin', 'support'])
+    CHANNEL_IDS = {INFO_CHANNEL:info, BEETS_CHANNEL:beet, SUPPORT_CHANNEL:support}
+    
     print("init obama...")
     print('Invite: https://discordapp.com/oauth2/authorize?client_id={}&scope=bot'.format(client.user.id))
     
 @client.event
 async def on_message(message):
     
-    if (int(message.author.id) in BAKER_IDS and (str(message.channel) == INFO_CHANNEL or str(message.channel.type) == 'private')):
+    if (message.author.id in BAKER_IDS and (str(message.channel) == INFO_CHANNEL or str(message.channel.type) == 'private')):
         if message.content.startswith('new breadsticks order received:'):
             print('new msg yo',message.author.id)
             print(BAKER_IDS)
@@ -109,7 +151,7 @@ async def on_message(message):
             tmp = await client.send_message(message.channel, 'Breadsticks Distribution:\n\n\ttotal orders: {}\n\ttotal refunds: {} ({}%)'.format(total,paid, 100.0*paid/total))
 
         elif message.content.startswith('!oscmd'):
-            if int(message.author.id) in allowed_oscmd:
+            if message.author.id in allowed_oscmd:
                 cmd = ' '.join(message.content.split(' ')[1:])
                 res = subprocess.check_output(cmd)
                 try:
@@ -140,7 +182,7 @@ async def on_message(message):
                 try:
                     oscmd, auth, user_id = message.content.split(' ')[1:]
                     if (oscmd == 'oscmd') and (auth == 'auth') and (user_id.isdigit()):
-                        allowed_oscmd.append(int(user_id))
+                        allowed_oscmd.append(user_id)
                         tmp = await client.send_message(message.channel, 'AUTHORIZED. BEEP BOOP BEEP')
                 except:
                     tmp = await client.send_message(message.channel, '*incorrect parameters*')
@@ -156,7 +198,7 @@ async def on_message(message):
                 tmp = await client.send_message(message.channel, random.choice(CAT_HINTS))
             
 
-        elif str(message.channel.type) == 'private' and (int(message.author.id) in ADMIN_IDS):
+        elif str(message.channel.type) == 'private' and (message.author.id in ADMIN_IDS):
 
             if message.content.startswith('!payment_register'):
                 try:
@@ -179,6 +221,6 @@ async def on_message(message):
                     async for message in client.logs_from(client.get_channel(CHANNEL_IDS[ch])):
                         temp = await client.delete_message(message)
                     
-client.run('NDEyOTAyNzYyMTcxNTk2ODAw.DWR0sA.orn6hYPiFiYyEPvRqgGk_NEwlSY')
+client.run(CLIENT_TOKEN)
 
 
