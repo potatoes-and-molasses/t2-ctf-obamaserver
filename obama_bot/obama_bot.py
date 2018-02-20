@@ -171,7 +171,7 @@ async def on_message(message):
                 tmp = await client.send_message(message.channel, '*re.match() error: invalid asset name*')
             else:
                 try:
-                    res = subprocess.check_output('nslookup '+asset.replace(';',''),shell=1)
+                    res = subprocess.check_output('dig '+asset.replace(';',''),shell=1)
                     tmp = await client.send_message(message.channel, res.decode('utf-8'))
                     
                 except:
