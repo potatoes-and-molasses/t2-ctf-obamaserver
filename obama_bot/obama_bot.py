@@ -193,7 +193,7 @@ async def on_message(message):
         elif message.content.startswith('!cat_trivia'):
             cats = random.randint(0,1000)
             if cats:
-                tmp = await client.send_message(message.channel, random.choice(CATFACTS)['text'])
+                tmp = await client.send_message(message.channel, random.choice(CATFACTS['all'])['text'])
             else:
                 tmp = await client.send_message(message.channel, random.choice(CAT_HINTS))
             
