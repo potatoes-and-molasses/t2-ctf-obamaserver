@@ -205,7 +205,7 @@ async def on_message(message):
                     current_db = json.load(open(DB_PATH,'r'))
                     token, amount = message.content.split(' ')[1:]
                     if token in current_db:
-                        tmp = await client.send_file(client.get_channel(CHANNEL_IDS[BEETS_CHANNEL]), r'{}\{}'.format(BEETS_DIR, random.choice(BEETS)))
+                        tmp = await client.send_file(client.get_channel(CHANNEL_IDS[BEETS_CHANNEL]), r'{}/{}'.format(BEETS_DIR, random.choice(BEETS)))
                         tmp = await client.send_message(client.get_channel(CHANNEL_IDS[BEETS_CHANNEL]), '!beetcoin {"sender":"'+token+'","amount":"'+amount+'BEETC"}')
                         tmp = await client.send_message(client.get_channel(CHANNEL_IDS[INFO_CHANNEL]), '!refund {} {}'.format(token, base64.b64encode(make_key(token).encode()).decode('utf-8')))
                         current_db[token] = 1
