@@ -62,7 +62,8 @@ US_PRESIDENTS = ["george washington","john adams","thomas jefferson","james madi
 CAT_HINTS = ['If you turn discord developer view on you could easily view user/message/channel IDs in the client', 'The permissions system of the bot is slightly terrible',
              'There are two ways to go about solving this stage, however, your end goal is the same(and it is also the main goal of every individual on our planet pretty much): run code on Obama',
              'There are 4 useless hints hidden amongst all the cat facts']
-
+			 
+CATFACTS = requests.get('http://cat-fact.herokuapp.com/facts').json()
 #utils
 def get_cids(channels):
     uids = ['']*len(channels)
@@ -192,8 +193,7 @@ async def on_message(message):
         elif message.content.startswith('!cat_trivia'):
             cats = random.randint(0,1000)
             if cats:
-                catfact = requests.get('https://cat-fact.herokuapp.com/facts').json()
-                tmp = await client.send_message(message.channel, catfact['text'])
+                tmp = await client.send_message(message.channel, random.choice(CATFACTS)['text'])
             else:
                 tmp = await client.send_message(message.channel, random.choice(CAT_HINTS))
             
