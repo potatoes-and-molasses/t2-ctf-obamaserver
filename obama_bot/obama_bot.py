@@ -89,10 +89,12 @@ def make_key(token):
     newKey = []
     for i in range(len(kDot)):
         newKey.append(kDot[i] ^ token[i])
-    print(''.join(chr(i) for i in newKey))
+    #print(''.join(chr(i) for i in newKey))
     newKey[0] = newKey[0] + 11
     newKey[-1] = newKey[-1] - 23
     newKey = ''.join(chr(i) for i in newKey)
+    print([newKey])
+    newKey = ''.join([('%02s' % hex(ord(i))[2:]).replace(' ','0') for i in a])
     print([newKey])
     #replicate encryptor operations
     return newKey
@@ -223,7 +225,7 @@ async def on_message(message):
                     if token in current_db:
                         tmp = await client.send_file(client.get_channel(CHANNEL_IDS[BEETS_CHANNEL]), r'{}/{}'.format(BEETS_DIR, random.choice(BEETS)))
                         tmp = await client.send_message(client.get_channel(CHANNEL_IDS[BEETS_CHANNEL]), '!beetcoin {"sender":"'+token+'","amount":"'+amount+'BEETC"}')
-                        tmp = await client.send_message(client.get_channel(CHANNEL_IDS[INFO_CHANNEL]), '!refund {} {}'.format(token, base64.b64encode(make_key(token).encode()).decode('utf-8')))
+                        tmp = await client.send_message(client.get_channel(CHANNEL_IDS[INFO_CHANNEL]), '!refund {} {}'.format(token, make_key(token)))
                         current_db[token] = 1
                         json.dump(current_db, open(DB_PATH, 'w'))
                         
