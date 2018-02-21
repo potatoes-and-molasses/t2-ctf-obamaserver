@@ -92,12 +92,9 @@ def make_key(token):
     #print(''.join(chr(i) for i in newKey))
     newKey[0] = newKey[0] + 11
     newKey[-1] = newKey[-1] - 23
-    newKey = ''.join(chr(i) for i in newKey)
-    print([newKey])
-    newKey = ''.join([('%02s' % hex(ord(i))[2:]).replace(' ','0') for i in a])
-    print([newKey])
-    #replicate encryptor operations
-    return newKey
+    newKey = bytes(newKey)
+    
+    return newKey.hex()
 
 def notify_thing(stage_name):
 
