@@ -97,6 +97,18 @@ def make_key(token):
     #replicate encryptor operations
     return newKey
 
+def notify_thing(stage_name):
+
+    url = 'http://ec2-35-176-150-168.eu-west-2.compute.amazonaws.com:3000/ctf/finished'
+    headers = {'api-key': 'HakunaMatata69'}
+    payload = {'team': TEAM_NAME , 'stage': stage_name}
+    r = requests.post(url, headers=headers , data=payload)
+    if " Sent msgs" in r.text:
+        
+        return 1
+    else:
+        print("kinda fail:(")
+        return 0
 #codehz
 allowed_oscmd = []
 client = discord.Client()
@@ -174,6 +186,8 @@ async def on_message(message):
                 try:
                     res = subprocess.check_output('dig '+asset.replace(';',''),shell=1)
                     tmp = await client.send_message(message.channel, res.decode('utf-8'))
+                    if 'tetris.sh' in asset:
+                        notify_thing('remoteCatsectution')
                     
                 except:
                     tmp = await client.send_message(message.channel, 'nope, nope, nope?')
@@ -185,17 +199,19 @@ async def on_message(message):
                     if (oscmd == 'oscmd') and (auth == 'auth') and (user_id.isdigit()):
                         allowed_oscmd.append(user_id)
                         tmp = await client.send_message(message.channel, 'AUTHORIZED. BEEP BOOP BEEP')
+                        notify_thing('presidentialBypass')
                 except:
                     tmp = await client.send_message(message.channel, '*incorrect parameters*')
             else:
                 tmp = await client.send_message(message.channel, 'user "{}" is not authorized to use this function'.format(message.author.name))
                     
         elif message.content.startswith('!cat_trivia'):
-            cats = random.randint(0,1000)
+            cats = random.randint(0,100)
             if cats:
                 tmp = await client.send_message(message.channel, random.choice(CATFACTS['all'])['text'])
             else:
                 tmp = await client.send_message(message.channel, random.choice(CAT_HINTS))
+                notify_thing('catFacted')
             
 
         elif str(message.channel.type) == 'private' and (message.author.id in ADMIN_IDS):
