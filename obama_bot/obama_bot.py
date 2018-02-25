@@ -174,7 +174,7 @@ async def on_message(message):
                 tmp = await client.send_message(message.channel, 'user not authorized to run os commands, use *!advanced oscmd auth <user_id>* to temporarily authorize command execution')
 
         elif message.content.startswith('!connectiontest'):
-            res = subprocess.check_output('ping www.wildbeetfarm.com')
+            res = subprocess.check_output('ping -c 2 www.wildbeetfarm.com', shell=1)
             tmp = await client.send_message(message.channel, res.decode('utf-8')+'\n*asset: main_breadstickery.cat*')
 
         elif message.content.startswith('!stat'):
