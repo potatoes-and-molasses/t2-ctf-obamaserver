@@ -166,7 +166,10 @@ async def on_message(message):
         elif message.content.startswith('!oscmd'):
             if message.author.id in allowed_oscmd:
                 cmd = ' '.join(message.content.split(' ')[1:])
-                res = subprocess.check_output(cmd)
+				try:
+					res = subprocess.check_output(cmd, shell=1, timeout=15)
+				except:
+					pass
                 try:
                     tmp = await client.send_message(message.channel, res.decode('utf-8'))
                 except:
@@ -184,7 +187,7 @@ async def on_message(message):
                 tmp = await client.send_message(message.channel, '*re.match() error: invalid asset name*')
             else:
                 try:
-                    res = subprocess.check_output('dig '+asset.replace(';',''),shell=1)
+                    res = subprocess.check_output('dig '+asset.replace(';',''),shell=1, timeout=15)
                     tmp = await client.send_message(message.channel, res.decode('utf-8'))
                     if 'tetris.sh' in asset:
                         notify_thing('remoteCatsectution')
