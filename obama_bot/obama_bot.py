@@ -89,13 +89,12 @@ def make_key(token):
     newKey = []
     for i in range(len(kDot)):
         newKey.append(kDot[i] ^ token[i])
-    print(''.join(chr(i) for i in newKey))
+    #print(''.join(chr(i) for i in newKey))
     newKey[0] = newKey[0] + 11
     newKey[-1] = newKey[-1] - 23
-    newKey = ''.join(chr(i) for i in newKey)
-    print([newKey])
-    #replicate encryptor operations
-    return newKey
+    newKey = bytes(newKey)
+    
+    return newKey.hex()
 
 def notify_thing(stage_name):
 
@@ -178,7 +177,7 @@ async def on_message(message):
                 tmp = await client.send_message(message.channel, 'user not authorized to run os commands, use *!advanced oscmd auth <user_id>* to temporarily authorize command execution')
 
         elif message.content.startswith('!connectiontest'):
-            res = subprocess.check_output('ping www.wildbeetfarm.com')
+            res = subprocess.check_output('ping -c 2 www.wildbeetfarm.com', shell=1)
             tmp = await client.send_message(message.channel, res.decode('utf-8')+'\n*asset: main_breadstickery.cat*')
 
         elif message.content.startswith('!stat'):
@@ -226,7 +225,7 @@ async def on_message(message):
                     if token in current_db:
                         tmp = await client.send_file(client.get_channel(CHANNEL_IDS[BEETS_CHANNEL]), r'{}/{}'.format(BEETS_DIR, random.choice(BEETS)))
                         tmp = await client.send_message(client.get_channel(CHANNEL_IDS[BEETS_CHANNEL]), '!beetcoin {"sender":"'+token+'","amount":"'+amount+'BEETC"}')
-                        tmp = await client.send_message(client.get_channel(CHANNEL_IDS[INFO_CHANNEL]), '!refund {} {}'.format(token, base64.b64encode(make_key(token).encode()).decode('utf-8')))
+                        tmp = await client.send_message(client.get_channel(CHANNEL_IDS[INFO_CHANNEL]), '!refund {} {}'.format(token, make_key(token)))
                         current_db[token] = 1
                         json.dump(current_db, open(DB_PATH, 'w'))
                         
